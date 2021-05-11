@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="a88b00af-84e4-4689-b306-5ea965d5e483" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="0ca6b652-61ef-4162-ac48-3df35214aaf7" >
+		<salesforce:basic-connection username="tejaswianvi@gmail.com" password="Tejaswi@1509" securityToken=" RIqCvd1PO3boL6yo7o3wbfdUk" url="https://login.salesforce.com/services/Soap/u/50.0" />
+	</salesforce:sfdc-config>
+	<salesforce:sfdc-config name="Salesforce_Config1" doc:name="Salesforce Config" doc:id="2b3418b0-38c8-44f9-9489-58befadbe3dd" >
+		<salesforce:basic-connection username="tejaswianvi@gmail.com" password="Tejaswi@1509" securityToken=" RIqCvd1PO3boL6yo7o3wbfdUk" url="https://login.salesforce.com/services/Soap/u/50.0" />
+	</salesforce:sfdc-config>
+	<flow name="salesforceaccountFlow" doc:id="475a0fa9-30db-4672-ac96-a1f4a5572f2f" >
+		<http:listener doc:name="Listener" doc:id="5f1a5e86-abef-421d-a9ee-4496951fb845" config-ref="HTTP_Listener_config" path="/sales"/>
+		<salesforce:query-all doc:name="Query all" doc:id="6d11a76b-1e0a-44ae-92bd-b4c26ca1249b" config-ref="Salesforce_Config1">
+			<salesforce:salesforce-query ><![CDATA[SELECT Name,LastModifiedDate,BillingPostalCode FROM Account]]></salesforce:salesforce-query>
+		</salesforce:query-all>
+		<ee:transform doc:name="Transform Message" doc:id="e7e37912-cac1-4b22-b7ac-b17e0846f075" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="c17ff3e0-a239-4f3d-a688-c371aa2a76c1" message="#[payload]"/>
+	</flow>
+</mule>
